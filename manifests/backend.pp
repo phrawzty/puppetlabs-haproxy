@@ -1,4 +1,4 @@
-# == Define Resource Type: haproxy::balancermember
+# == Define Resource Type: haproxy::backend
 #
 # This type will setup a balancer member inside a listening service
 #  configuration block in /etc/haproxy/haproxy.cfg on the load balancer.
@@ -30,13 +30,13 @@
 #     will accept connections from the load balancer. Note that cookie values
 #     aren't yet supported, but shouldn't be difficult to add to the
 #     configuration. If you use an array in server_names and ipaddresses, the
-#     same port is used for all balancermembers.
+#     same port is used for all backends.
 #
 # [*server_names*]
 #     The name of the balancer member server as known to haproxy in the
 #      listening service's configuration block. This defaults to the
 #      hostname. Can be an array of the same length as ipaddresses,
-#      in which case a balancermember is created for each pair of
+#      in which case a backend is created for each pair of
 #      server_names and ipaddresses (in lockstep).
 #
 # [*ipaddresses*]
@@ -52,7 +52,7 @@
 #
 #  Exporting the resource for a balancer member:
 #
-#  @@haproxy::balancermember { 'haproxy':
+#  @@haproxy::backend { 'haproxy':
 #    listening_service => 'puppet00',
 #    ports             => '8140',
 #    server_names      => $::hostname,
@@ -63,23 +63,23 @@
 #
 #  Collecting the resource on a load balancer
 #
-#  Haproxy::Balancermember <<| listening_service == 'puppet00' |>>
+#  Haproxy::Backend <<| listening_service == 'puppet00' |>>
 #
 #  Creating the resource for multiple balancer members at once
 #  (for single-pass installation of haproxy without requiring a first
 #  pass to export the resources if you know the members in advance):
-# 
-#  haproxy::balancermember { 'haproxy':
+#
+#  haproxy::backend { 'haproxy':
 #    listening_service => 'puppet00',
 #    ports             => '8140',
 #    server_names      => ['server01', 'server02'],
 #    ipaddresses       => ['192.168.56.200', '192.168.56.201'],
 #    options           => 'check',
 #  }
-#  
+#
 #  (this resource can be declared anywhere)
 #
-define haproxy::balancermember (
+define haproxy::backend (
   $listening_service,
   $ports,
   $server_names = $::hostname,
@@ -87,9 +87,9 @@ define haproxy::balancermember (
   $options      = ''
 ) {
   # Template uses $ipaddresses, $server_name, $ports, $option
-  concat::fragment { "${listening_service}_balancermember_${name}":
-    order   => "20-${listening_service}-${name}",
+  concat::fragment { "${listening_service}_backend_${name}":
+    order   => "30-${listening_service}-${name}",
     target  => '/etc/haproxy/haproxy.cfg',
-    content => template('haproxy/haproxy_balancermember.erb'),
+    content => template('haproxy/backend.erb'),
   }
 }

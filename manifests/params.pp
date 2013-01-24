@@ -5,7 +5,7 @@
 #  extended by changing package names and configuration file paths.
 #
 class haproxy::params {
-  case $osfamily {
+  case $::osfamily {
     Redhat: {
       $global_options   = {
         'log'     => "${::ipaddress} local0",

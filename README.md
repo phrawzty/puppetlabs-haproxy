@@ -1,5 +1,7 @@
-PuppetLabs Module for haproxy
-=============================
+PuppetLabs Module for haproxy (phrawzty remix)
+==============================================
+
+*IMPORTANT* This documentation needs to be updated due to phrawzty's edits.
 
 HAProxy is an HA proxying daemon for load-balancing to clustered services. It
 can proxy TCP directly, or other kinds of traffic such as HTTP.

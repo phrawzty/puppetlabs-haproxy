@@ -1,4 +1,4 @@
-# == Define Resource Type: haproxy::listen
+# == Define Resource Type: haproxy::frontend
 #
 # This type will setup a listening service configuration block inside
 #  the haproxy.cfg file on an haproxy load balancer. Each listening service
@@ -41,8 +41,8 @@
 # [*collect_exported*]
 #    Boolean, default 'true'. True means 'collect exported @@balancermember resources'
 #    (for the case when every balancermember node exports itself), false means
-#    'rely on the existing declared balancermember resources' (for the case when you 
-#    know the full set of balancermembers in advance and use haproxy::balancermember 
+#    'rely on the existing declared balancermember resources' (for the case when you
+#    know the full set of balancermembers in advance and use haproxy::balancermember
 #    with array arguments, which allows you to deploy everything in 1 run)
 #
 #
@@ -50,7 +50,7 @@
 #
 #  Exporting the resource for a balancer member:
 #
-#  haproxy::listen { 'puppet00':
+#  haproxy::frontend { 'puppet00':
 #    ipaddress => $::ipaddress,
 #    ports     => '18140',
 #    mode      => 'tcp',
@@ -67,11 +67,12 @@
 #
 # Gary Larizza <gary@puppetlabs.com>
 #
-define haproxy::listen (
+define haproxy::frontend (
   $ports,
+  $default_backend,
   $ipaddress        = [$::ipaddress],
   $mode             = 'tcp',
-  $collect_exported = true,
+  $collect_exported = false,
   $options          = {
     'option'  => [
       'tcplog',
@@ -81,14 +82,14 @@ define haproxy::listen (
   }
 ) {
   # Template uses: $name, $ipaddress, $ports, $options
-  concat::fragment { "${name}_listen_block":
+  concat::fragment { "${name}_frontend_block":
     order   => "20-${name}-00",
     target  => '/etc/haproxy/haproxy.cfg',
-    content => template('haproxy/haproxy_listen_block.erb'),
+    content => template('haproxy/frontend.erb'),
   }
 
   if $collect_exported {
-    Haproxy::Balancermember <<| listening_service == $name |>>
+    Haproxy::Backend <<| listening_service == $name |>>
   }
   # else: the resources have been created and they introduced their
   # concat fragments. We don't have to do anything about them.

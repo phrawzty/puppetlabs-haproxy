@@ -98,7 +98,7 @@ class haproxy (
     concat::fragment { 'haproxy-base':
       target  => '/etc/haproxy/haproxy.cfg',
       order   => '10',
-      content => template('haproxy/haproxy-base.cfg.erb'),
+      content => template('haproxy/base.cfg.erb'),
     }
 
     if ($::osfamily == 'Debian') {
