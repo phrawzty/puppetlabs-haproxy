@@ -84,9 +84,10 @@ define haproxy::backend (
   $ports,
   $server_names = $::hostname,
   $ipaddresses  = $::ipaddress,
-  $options      = ''
+  $options      = '',
+  $mode         = 'tcp'
 ) {
-  # Template uses $ipaddresses, $server_name, $ports, $option
+  # Template uses $ipaddresses, $server_name, $ports, $option, $mode
   concat::fragment { "${listening_service}_backend_${name}":
     order   => "30-${listening_service}-${name}",
     target  => '/etc/haproxy/haproxy.cfg',
